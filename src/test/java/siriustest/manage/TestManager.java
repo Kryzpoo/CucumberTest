@@ -6,10 +6,9 @@ import cucumber.api.java.Before;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import siriustest.DriverIdentifyer;
+import siriustest.DriverIdentifier;
 import siriustest.PropertiesLoader;
 
 import java.io.File;
@@ -25,15 +24,19 @@ public class TestManager {
 
     @Before
     public void setUp() {
-        System.setProperty(DriverIdentifyer.identifyDriver(PROPERTIES),
+        String driverName = PROPERTIES.getProperty( "driver.name" );
+        String driverFilename = PROPERTIES.getProperty( "driver.filename" );
+        String driverTimeout = PROPERTIES.getProperty( "setting.timeout" );
+
+        System.setProperty(DriverIdentifier.identifyDriver( driverName ),
                 System.getProperty( "user.dir" )
                         + File.separator
                         + "Drivers"
                         + File.separator
-                        + PROPERTIES.getProperty( "driver.filename" ));
-        driver = new ChromeDriver();
-        driver.manage().timeouts().pageLoadTimeout( Integer.parseInt( PROPERTIES.getProperty( "setting.timeout" ) ), TimeUnit.SECONDS);
-        wait = new WebDriverWait(driver, Integer.parseInt( PROPERTIES.getProperty( "setting.timeout" ) ));
+                        + driverFilename );
+        driver = DriverIdentifier.getDriver( driverName );
+        driver.manage().timeouts().pageLoadTimeout( Integer.parseInt( driverTimeout ), TimeUnit.SECONDS );
+        wait = new WebDriverWait(driver, Integer.parseInt( driverTimeout ));
         inputExecutor = new Actions(driver);
     }
 
@@ -59,5 +62,4 @@ public class TestManager {
     public static Properties getProperties() {
         return PROPERTIES;
     }
-
 }

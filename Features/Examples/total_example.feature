@@ -1,8 +1,8 @@
 @exampletests
-@shortexample
-Feature: short example
+@totalexample
+Feature: total example
 
-  Scenario: short test
+  Scenario: total test
     Given page 'Payments and Transfers' is opened
     When user presses button "МТС "
     Then element "caption" : "Номер телефона" should be displayed
@@ -12,7 +12,7 @@ Feature: short example
       And user presses button "Далее"
       And element "caption" : "Платёж подготовлен" should be displayed
     When user presses button "Показать баланс"
-      And user presses button "Оплатить"
-    When user presses button "Напечатать чек"
-      And user presses button "ОК" on check
-      And user presses button 'HOME'
+    Then element "Наименование" : "МТС" should be displayed on 'Total' page
+    And element "Списать со счета" : " 4279 99** **** 7759" should be displayed on 'Total' page
+    And element "Списать со счета" : " 4279 99** **** 6759" should be displayed on 'Total' page
+

@@ -1,5 +1,5 @@
 @exampletests
-@paramsexampletests
+@paramsexample
 Feature: params example
 
   Scenario Outline: test with parameters

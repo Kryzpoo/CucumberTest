@@ -12,28 +12,32 @@ Feature: test
     When user presses button "Подключить автоплатеж"
 
 
-    And user presses button HOME
-    And user presses button HELP
+    And user presses button 'HOME'
+    And user presses button 'HELP'
 
-    Then template should be an "atm_menu"
+    Then template "atm_menu" should be displayed
     Then button "Вернуться в меню" should be displayed
     When user inserts "123d" into field (Touch)
     When user inserts "123d" into field (FDK)
     When user presses 'calendar switcher previous' button
     When user presses 'calendar switcher next' button
     When user waits for timeout "12"
+    When user clears insert field by pressing backspace "50" times
 
-
-    Then user should see check
-    Then user should see keyboard
-    Then element "region" : "" should be displayed
-    Then element "" : "" should be displayed on error page  //class: report_caption, report_description
-    Then element on TOTAL should be
-    Then user should see keyboard
+    Then check should be displayed
+    Then check should contain string ""
+    Then element 'region' : "" should be displayed
+    Then element 'notes' : "" should be displayed
+    Then element "" : "" should be displayed on 'OK' page
+    Then element "" : "" should be displayed on 'Total' page
+    Then element "" : "" should be displayed on 'Error' page
+    Then keyboard should be displayed
+    Then greeting "" should be displayed
 
     Then element "support" : "" should be displayed
     Then element 'timeout screen' should be displayed
     Then element "caption" : "description" should be displayed
+    Then log should contain string ""
 
   @pageloadtests
   Scenario: pageload tests
