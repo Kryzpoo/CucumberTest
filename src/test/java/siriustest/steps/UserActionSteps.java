@@ -23,16 +23,15 @@ public class UserActionSteps {
     @When("^user inserts \"([^\"]*)\"$")
     public void userInsertsIntoFieldTouch(String text) throws Throwable {
         wait.until(ExpectedConditions.visibilityOfElementLocated
-                (By.className( "input_view" )));
+                (By.className( "input_cursor" )));
         inputExecutor.sendKeys( text );
         inputExecutor.build().perform();
-        //System.out.println(driver.findElement(By.xpath("//*[@class = 'input_view']")).getText());
     }
 
     @When("^user clears insert field by pressing backspace \"([^\"]*)\" times$")
     public void userClearsInsertField(int pressCount) throws Throwable {
         wait.until(ExpectedConditions.visibilityOfElementLocated
-                (By.className( "input_view" )));
+                (By.className( "input_cursor" )));
         for (int i = 0; i < pressCount; i++)
             inputExecutor.sendKeys( Keys.BACK_SPACE );
         inputExecutor.build().perform();

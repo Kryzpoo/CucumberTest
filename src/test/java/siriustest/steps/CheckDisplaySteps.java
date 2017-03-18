@@ -8,31 +8,36 @@ import siriustest.manage.TestManager;
 
 public class CheckDisplaySteps {
 
-    private static final String translatedSymbols = "translate(text(), '\u00A0\u200B\u00AD', ' ')";
+    private static final String translatedSymbols = "translate(normalize-space(), ' \u00A0\u200B\u00AD', '')";
     private WebDriverWait wait = TestManager.getWait();
+    private WebDriverWait shortWait = TestManager.getShortWait();
 
     @Then("^element \"([^\"]*)\" : \"([^\"]*)\" should be displayed$")
     public void elementShouldBeDisplayed(String elementType, String elementText) throws Throwable {
+        elementText = elementText.replaceAll(" ", "");
         wait.until(ExpectedConditions.visibilityOfElementLocated
-                (By.xpath( "//*[contains(@class, '" + elementType + "_text') and " + translatedSymbols + " = '" + elementText + "']" )));
+                (By.xpath( "//*[contains(@class, '" + elementType + "_text') and " + translatedSymbols + " = '" + elementText + "' ]" )));
     }
 
     @Then("^element 'notes' : \"([^\"]*)\" should be displayed$")
     public void elementNotesShouldBeDisplayed(String notesText) throws Throwable {
+        notesText = notesText.replaceAll(" ", "");
         wait.until(ExpectedConditions.visibilityOfElementLocated
-                (By.xpath( "//*[@class = 'description_text' and contains(" + translatedSymbols + ", '" + notesText + "')]" )));
+                (By.xpath( "//*[@class = 'description_text']/..//*[contains(" + translatedSymbols + ", '" + notesText + "')]" )));
     }
 
-    @Then("^element 'region' : \"([^\"]*)\" should be displayed$")
-    public void elementRegionShouldBeDisplayed(String regionText) throws Throwable {
+    @Then("^element 'region field' : \"([^\"]*)\" should be displayed$")
+    public void elementRegionFieldShouldBeDisplayed(String regionText) throws Throwable {
+        regionText = regionText.replaceAll(" ", "");
         wait.until(ExpectedConditions.visibilityOfElementLocated
-                (By.xpath( "//*[@class = 'btn_caption' and " + translatedSymbols + " = '" + regionText + "']" )));
+                (By.xpath( "//*[@class = 'btn_caption']/..//*[" + translatedSymbols + " = '" + regionText + "']" )));
     }
 
     @Then("^element 'support' : \"([^\"]*)\" should be displayed$")
     public void elementSupportShouldBeDisplayed(String supportText) throws Throwable {
+        supportText = supportText.replaceAll(" ", "");
         wait.until(ExpectedConditions.visibilityOfElementLocated
-                (By.xpath( "//*[@class = 'timeout_support' and " + translatedSymbols + " = '" + supportText + "']" )));
+                (By.xpath( "//*[@class = 'timeout_support']/..//*[" + translatedSymbols + " = '" + supportText + "']" )));
     }
 
     @Then("^element 'timeout screen' should be displayed$")
@@ -47,16 +52,17 @@ public class CheckDisplaySteps {
                 (By.xpath( "//meta[@content = '" + templateName + ".html']" )));
     }
 
-    @Then("^button \"([^\"]*)\" should be displayed$")
-    public void buttonShouldBeDisplayed(String buttonText) throws Throwable {
-        wait.until(ExpectedConditions.visibilityOfElementLocated
-                (By.xpath("//*[" + translatedSymbols + " = '" + buttonText + "']/..")));
+    @Then("^element with text \"([^\"]*)\" should be displayed$")
+    public void elementShouldBeDisplayed(String elementText) throws Throwable {
+        elementText = elementText.replaceAll(" ", "");
+        wait.until(ExpectedConditions.presenceOfElementLocated
+                (By.xpath("//*[" + translatedSymbols + " = '" + elementText + "']")));
     }
 
     @Then("^keyboard should be displayed$")
     public void userShouldSeeKeyboard() throws Throwable {
         wait.until(ExpectedConditions.visibilityOfElementLocated
-                (By.className("kb_all")));
+            (By.xpath("//*[@class = 'b-numpad' or @class = 'kb_all']")));
     }
 
     @Then("^check should be displayed$")
@@ -73,8 +79,9 @@ public class CheckDisplaySteps {
 
     @Then("^element \"([^\"]*)\" : \"([^\"]*)\" should be displayed on 'OK' page$")
     public void elementShouldBeDisplayedOnOKPage(String elementType, String elementText) throws Throwable {
-        wait.until(ExpectedConditions.visibilityOfElementLocated
-                (By.xpath( "//*[contains(@class, 'report_" + elementType + "') and " + translatedSymbols + " = '" + elementText + "']" )));
+        elementText = elementText.replaceAll(" ", "");
+        wait.until(ExpectedConditions.presenceOfElementLocated
+                (By.xpath( "//*[@class = 'report_" + elementType + "']/..//*[" + translatedSymbols + " = '" + elementText + "']" )));
     }
 
     @Then("^element \"([^\"]*)\" : \"([^\"]*)\" should be displayed on 'Error' page$")
@@ -83,17 +90,37 @@ public class CheckDisplaySteps {
     }
 
     @Then("^element \"([^\"]*)\" : \"([^\"]*)\" should be displayed on 'Total' page$")
-    public void elementShouldBeDisplayedOnTotalPage(String elementType, String elementText) throws Throwable {
-        wait.until(ExpectedConditions.visibilityOfElementLocated
-                (By.xpath( "//*[" + translatedSymbols + " = '" + elementType + "']/../..//*[" + translatedSymbols + " = '" + elementText + "']" )));
+    public void elementShouldBeDisplayedOnTotalPage(String elementCaption, String elementText) throws Throwable {
+        elementCaption = elementCaption.replaceAll(" ", "");
+        elementText = elementText.replaceAll(" ", "");
+        wait.until(ExpectedConditions.presenceOfElementLocated
+                (By.xpath( "//*[" + translatedSymbols + " = '" + elementCaption + "']/../..//*[" + translatedSymbols + " = '" + elementText + "']" )));
     }
 
-    // TODO: 12.03.2017 Проверка приветствия
     @Then("^greeting \"([^\"]*)\" should be displayed$")
     public void greetingShouldBeDisplayed(String elementText) throws Throwable {
-        //*[translate(text(), ' ​­', ' ') = 'Здравствуйте,']/..//*[translate(text(), ' ​­', ' ') = 'САТУРН ПЛАНЕТОВИЧ']
-        System.out.println(wait.until(ExpectedConditions.visibilityOfElementLocated
-                (By.xpath( "//*[@id=\"content\"]/div[3]/div[1]/div[2]" ))));
-        //*[translate(text(), ' ​­', ' ') = 'Здравствуйте, САТУРН ПЛАНЕТОВИЧ']
+        elementText = elementText.replaceAll(" ", "");
+        wait.until(ExpectedConditions.visibilityOfElementLocated
+                (By.xpath( "//*[@class = 'btn_caption' and " + translatedSymbols + " = '" + elementText + "']" )));
+    }
+
+    @Then("^element with text \"([^\"]*)\" should not be displayed$")
+    public void elementWithTextShouldNotBeDisplayed(String elementText) throws Throwable {
+        elementText = elementText.replaceAll(" ", "");
+        shortWait.until(ExpectedConditions.not(ExpectedConditions.visibilityOfAllElementsLocatedBy
+                (By.xpath("//*[" + translatedSymbols + " = '" + elementText + "']"))));
+    }
+
+    @Then("^scrollbar should be displayed$")
+    public void scrollbarShouldBeDisplayed() throws Throwable {
+        wait.until(ExpectedConditions.visibilityOfElementLocated
+                (By.xpath( "//*[contains(@class, 'b-scroll-bar') and not(contains(@style, 'display::none'))][not(ancestor::div[contains(@style,'display:none')])]" )));
+    }
+
+    @Then("^element 'help_notes' : \"([^\"]*)\" should be displayed$")
+    public void elementHelp_notesShouldBeDisplayed(String elementText) throws Throwable {
+        elementText = elementText.replaceAll(" ", "");
+        wait.until(ExpectedConditions.visibilityOfElementLocated
+                (By.xpath("//*[" + translatedSymbols + " = '" + elementText + "']")));
     }
 }

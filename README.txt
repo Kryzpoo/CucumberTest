@@ -37,25 +37,38 @@
 Шаги:
     В настоящий момент можно использовать следующие шаги (в независимости от этапа Given/When/Then/And):
         page 'Payments and Transfers' is opened
-        page 'Main Screen' is opened
-        user presses button "<button_name>"
-        user presses button 'HOME'
-        user presses button 'HELP'
+                  page 'Main Screen' is opened
+                  user inserts "<text>"
+                  user clears insert field by pressing backspace "<nember>" times
+                  user waits for timeout "<number>"
+                  user presses 'calendar switcher next' button
+                  user presses 'calendar switcher previous' button
+                  user presses button "<button_name>" on check
+                  user presses button 'HELP'
+                  user presses button 'HOME'
+                  user presses button "<button_name>"
+                  user scrolls up "<number>" times
+                  user scrolls down "<number>" times
+                  log should contain string "<string>"
+                  element with text "<element_text>" should not be displayed
+                  greeting "<element_text>" should be displayed
+                  check should contain string "<element_text>"
+                  check should be displayed
+                  keyboard should be displayed
+                  scrollbar should be displayed
+                  template "<template_name>" should be displayed
+                  element with text "<element_text>" should be displayed
+                  element 'timeout screen' should be displayed
+                  element 'support' : "<element_text>" should be displayed
+                  element 'region field' : "<element_text>" should be displayed
+                  element 'notes' : "<element_text>" should be displayed
+                  element 'help_notes' : "<element_text>" should be displayed
+                  element "<text_left>" : "<text_right>" should be displayed on 'Total' page
+                  element "<element_type>" : "<element_text>" should be displayed on 'Error' page
+                  element "<element_type>" : "<element_text>" should be displayed on 'OK' page
+                  element "<element_type>" : "<element_text>" should be displayed
 
-        user insert "<text>" into field (Touch)
-        user insert "<text>" into field (FDK)
-        user presses 'calendar switcher previous' button
-        user presses 'calendar switcher next' button
-        user waits for timeout "<timeout>"
-
-        template should be an "<template_name>"
-        button "<button_name>" should be displayed
-        user should see keyboard
-        element "<element_type: caption, description, title>" : "<element_text>" should be displayed
-        element 'region' : "" should be displayed
-        element 'support' : "" should be displayed
-        element 'timeout screen' should be displayed
-
+        * Пробелы игнорируются
         * Кавычки " " обязательны в шаге, а угловые скобки < > - описывают переменную.
           В шагах, где присутствуют кавычки одиночные ' ' без угловых скобок < > не допускаются другие переменные, например:
               user presses button "<button_name>" - означает, что можно ввести название кнопки самостоятельно: When user presses button "Платежи"

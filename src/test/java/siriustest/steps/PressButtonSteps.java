@@ -2,47 +2,30 @@ package siriustest.steps;
 
 import cucumber.api.java.en.When;
 import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import siriustest.manage.TestManager;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class PressButtonSteps {
 
-    private static final String translatedSymbols = "translate(text(), '\u00A0\u200B\u00AD', ' ')";
+    private static final String translatedSymbols = "translate(normalize-space(), ' \u00A0\u200B\u00AD', '')";
+    private static final String translatedSymbolsText = "translate(text(), ' \u00A0\u200B\u00AD', '')";
     private WebDriverWait wait = TestManager.getWait();
-    private WebDriver driver = TestManager.getDriver();
 
-    // TODO: 11.03.2017 Найти способ избавиться от sleep()
     @When("^user presses button \"([^\"]*)\"$")
     public void userPressesButton(String buttonText) throws Throwable {
+        buttonText = buttonText.replaceAll(" ", "");
         WebElement button = wait.until(ExpectedConditions.presenceOfElementLocated
-                (By.xpath("//*[" + translatedSymbols + " = '" + buttonText + "']/..")));
+                (By.xpath("//*[" + translatedSymbols + " = '" + buttonText + "' or " + translatedSymbolsText + " = '" + buttonText + "']/text()/..")));
         button.click();
-        Thread.sleep( 1000 );
     }
 
     @When("^user presses button 'HOME'$")
     public void userPressesButtonHOME() throws Throwable {
-        WebElement button;
-        List<String> homeButtonSelectorList = new ArrayList<>(2);
-        homeButtonSelectorList.add("//*[@class = 'b-btn b-btn-menu-dual']");
-        homeButtonSelectorList.add(("//*[@class = 'tabs_item ndc']"));
-
-        for ( String homeButtonSelector : homeButtonSelectorList ) {
-            if ( driver.findElements(By.xpath( homeButtonSelector )).size() > 0 ) {
-                button = driver.findElement(By.xpath( homeButtonSelector ));
-                button.click();
-                Thread.sleep( 1000 );
-                return;
-            }
-        }
-        throw new NoSuchElementException("Could not find button 'HOME'");
+        WebElement homeButton = wait.until(ExpectedConditions.visibilityOfElementLocated
+                (By.xpath( "//*[@class = 'b-btn b-btn-menu-dual' or @class = 'tabs_item ndc']" )));
+        homeButton.click();
     }
 
     @When("^user presses button 'HELP'$")
@@ -50,15 +33,14 @@ public class PressButtonSteps {
         WebElement helpButton = wait.until(ExpectedConditions.presenceOfElementLocated
                 (By.xpath("//*[@class = 'help_button']")));
         helpButton.click();
-        Thread.sleep( 1000 );
     }
 
     @When("^user presses button \"([^\"]*)\" on check$")
     public void userPressesButtonOnCheck(String buttonText) throws Throwable {
+        buttonText = buttonText.replaceAll(" ", "");
         WebElement button = wait.until(ExpectedConditions.presenceOfElementLocated
                 (By.xpath("//*[" + translatedSymbols + " = '" + buttonText + "']")));
         button.click();
-        Thread.sleep( 1000 );
     }
 
     @When("^user presses 'calendar switcher previous' button$")
@@ -66,7 +48,6 @@ public class PressButtonSteps {
         WebElement calendarSwitcherButton = wait.until(ExpectedConditions.presenceOfElementLocated
                 (By.className("switcher_prev")));
         calendarSwitcherButton.click();
-        Thread.sleep( 1000 );
     }
 
     @When("^user presses 'calendar switcher next' button$")
@@ -74,6 +55,21 @@ public class PressButtonSteps {
         WebElement calendarSwitcherButton = wait.until(ExpectedConditions.presenceOfElementLocated
                 (By.className("switcher_next")));
         calendarSwitcherButton.click();
-        Thread.sleep( 1000 );
+    }
+
+    @When("^user scrolls down \"([^\"]*)\" times$")
+    public void userScrollsDown(int count) throws Throwable {
+        WebElement scrollButton = wait.until(ExpectedConditions.presenceOfElementLocated
+                (By.xpath("//*[contains(@class, 'scroll-bar_next') and not(contains(@style, 'display::none'))][not(ancestor::div[contains(@style,'display:none')])]")));
+        for ( int i = 0; i < count; i++ )
+            scrollButton.click();
+    }
+
+    @When("^user scrolls up \"([^\"]*)\" times$")
+    public void userScrollsUp(int count) throws Throwable {
+        WebElement scrollButton = wait.until(ExpectedConditions.presenceOfElementLocated
+                (By.xpath("//*[contains(@class, 'scroll-bar_prev') and not(contains(@style, 'display::none'))][not(ancestor::div[contains(@style,'display:none')])]")));
+        for ( int i = 0; i < count; i++ )
+            scrollButton.click();
     }
 }

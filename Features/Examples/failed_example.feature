@@ -1,9 +1,10 @@
 @exampletests
+@failedexample
 Feature: failed example
 
   Scenario: failed test
     Given page 'Payments and Transfers' is opened
-    When user presses button "МТС"
+    When user presses button "NO_BUTTON"
     When user inserts "906555"
     When user presses button "Далее"
     When user inserts "2233"

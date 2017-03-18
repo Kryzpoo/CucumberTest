@@ -20,6 +20,7 @@ public class TestManager {
     private static final Properties PROPERTIES = PropertiesLoader.getProperties();
     private static WebDriver driver;
     private static WebDriverWait wait;
+    private static WebDriverWait shortWait;
     private static Actions inputExecutor;
 
     @Before
@@ -37,6 +38,7 @@ public class TestManager {
         driver = DriverIdentifier.getDriver( driverName );
         driver.manage().timeouts().pageLoadTimeout( Integer.parseInt( driverTimeout ), TimeUnit.SECONDS );
         wait = new WebDriverWait(driver, Integer.parseInt( driverTimeout ));
+        shortWait = new WebDriverWait(driver, 5);
         inputExecutor = new Actions(driver);
     }
 
@@ -53,6 +55,10 @@ public class TestManager {
 
     public static WebDriverWait getWait() {
         return wait;
+    }
+
+    public static WebDriverWait getShortWait() {
+        return shortWait;
     }
 
     public static Actions getInputExecutor() {
