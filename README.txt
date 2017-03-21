@@ -7,7 +7,7 @@
     Файл со сценариями должен иметь кодировку UTF-8
 
 Запуск тестов
-    mvn clean install -Dcucumber.options="--tags @alltests --tags ~@ignored"
+    mvn clean install -Dcucumber.options="--tags @all_steps_touch_example --tags ~@ignored"
 
 Отчеты
     1. Кратко, понятно, с результатами шагов:
