@@ -68,7 +68,8 @@
                   element "<element_type>" : "<element_text>" should be displayed on 'OK' page
                   element "<element_type>" : "<element_text>" should be displayed
 
-        * Пробелы игнорируются
+        * Пробелы в параметрах игнорируются:
+            element "caption" : "Сумма платежа" should be displayed = element "caption" : "Суммаплатежа" should be displayed
         * Кавычки " " обязательны в шаге, а угловые скобки < > - описывают переменную.
           В шагах, где присутствуют кавычки одиночные ' ' без угловых скобок < > не допускаются другие переменные, например:
               user presses button "<button_name>" - означает, что можно ввести название кнопки самостоятельно: When user presses button "Платежи"
