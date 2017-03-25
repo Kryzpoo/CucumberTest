@@ -1,95 +1,100 @@
 package siriustest;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.zip.ZipFile;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FileManager {
 
-    public static void example() throws  Exception{
-        File file = new File ( "C:\\Users\\Kryzpo\\Desktop\\log.txt" );
-        ZipFile zipFile = new ZipFile( "C:\\Users\\Kryzpo\\Desktop\\log.zip" );
-        String innerFile = "log.txt";
-        String pattern = "паттерн";
-        String searchingString = "найтиэто";
-        //System.out.println ( searchInLogFile (file, pattern, searchingString) );
-        //System.out.println ( searchInZippedLogFile (zipFile, innerFile, pattern, searchingString) );
-
-        File folder = new File( "C:\\Users\\Kryzpo\\Desktop\\logs" );
-        getFilesFromFolder(folder);
-
-
+    private static File[] getFilesFromFolder(File folder) {
+        return folder.listFiles((dir, name) -> name.contains("SystemOut"));
     }
 
-    public static List<File> getFilesFromFolder(File folder) {
-        File[] listOfFiles = folder.listFiles();
+    public static boolean searchInLogFile  ( File clientLogFile, File logsFolder, String searchingString ) {
+        boolean found = false;
+        String token;
+        String WASSessionId;
+        String[] serverLog;
+        String[] clientLog;
 
-        if ( listOfFiles == null || listOfFiles.length == 0 ) {
-            System.err.println("Директория " + folder + "пуста");
-            return null;
-        }
+        try ( FileInputStream clientLogFis = new FileInputStream(clientLogFile) ) {
+            clientLog = getTextFileAsArray( clientLogFis );
+            token = getToken( clientLog );
 
-        List<File> fitFiles = new ArrayList<>(listOfFiles.length);
-
-        for (int i = listOfFiles.length - 1; i >= 0; i--) {
-            if ( listOfFiles[i].isFile() ) {
-                fitFiles.add(listOfFiles[i]);
+            for (File serverLogFile : getFilesFromFolder(logsFolder)) {
+                FileInputStream serverLogFis = new FileInputStream(serverLogFile);
+                serverLog = getTextFileAsArray( serverLogFis );
+                WASSessionId = getWASSessionId( serverLog, token );
+                found = containsString( serverLog, WASSessionId, searchingString );
+                serverLogFis.close();
             }
-        }
-        return fitFiles;
-    }
 
-    public static boolean searchInZippedLogFile ( ZipFile zipFile, String innerFile, String pattern, String searchingString ) throws Exception {
-        boolean found = false;
-
-        try (BufferedReader reader = new BufferedReader
-                (new InputStreamReader
-                        (zipFile.getInputStream(zipFile.getEntry(innerFile)), "UTF-8"))) {
-
-            found = findString ( reader, pattern, searchingString );
         } catch (IOException ex) {
-            System.out.println("Файл " + innerFile + " не найден в архиве " + zipFile);
+            System.err.println( "Ошибки при разборе логов" );
         }
         return found;
     }
 
-    public static boolean searchInLogFile  ( File file, String pattern, String searchingString ) {
-        boolean found = false;
-
-        try ( BufferedReader reader = new BufferedReader
-                (new InputStreamReader
-                        (new FileInputStream( file ), "UTF-8" ))) {
-
-            found = findString ( reader, pattern, searchingString );
-        } catch (IOException ex) {
-            System.out.println("Файл " + file + " не найден");
-        }
-        return found;
-    }
-
-
-    private static boolean findString ( BufferedReader reader, String pattern, String searchingString ) throws IOException {
-        String line;
-
-        while( (line = reader.readLine()) != null ) {
-            System.out.println( "First WHILE: " + line );
-            if (line.contains(pattern)) {
-                System.out.println( "Line contains PATTERN: " + line );
-                while ( (line = reader.readLine()) != null ) {
-                    System.out.println( "Second WHILE: " + line );
-                    if ( line.contains(searchingString) ) {
-                        System.out.println( "Line contains searchingSTRING: " + line );
-                        return true;
-                    }
-                }
+    private static boolean containsString(String[] log, String WASSessionId, String searchingString) {
+        boolean contains = false;
+        for(int i = log.length - 1; i > 0; i--) {
+            if ( log[i].contains(WASSessionId) && log[i].contains(searchingString) ) {
+                contains = true;
                 break;
             }
         }
-        return false;
+        return contains;
     }
 
-    public static String getPattern(File property) {
-        return "";
+    private static String getWASSessionId(String[] log, String token) throws IOException {
+        String WASSessionId = null;
+        Pattern pattern = Pattern.compile("] (.*?) ");
+        Matcher matcher;
+
+        for(int i = log.length - 1; i > 0; i--) {
+            if (log[i].contains(token)) {
+                matcher = pattern.matcher(log[i]);
+                if (matcher.find()) {
+                    WASSessionId = matcher.group(1);
+                    break;
+                }
+            }
+        }
+        return WASSessionId;
+    }
+
+    private static String getToken(String[] log) {
+        String token = null;
+        Pattern pattern = Pattern.compile("token=(.*?)&");
+        Matcher matcher;
+
+        for(int i = log.length - 1; i > 0; i--) {
+            matcher = pattern.matcher(log[i]);
+            if (matcher.find()) {
+                token = matcher.group(1);
+                break;
+            }
+        }
+        return token;
+    }
+
+    private static String[] getTextFileAsArray(FileInputStream fis) throws IOException {
+        BufferedReader reader = new BufferedReader ( new InputStreamReader(fis, "UTF-8") );
+        int linesCount = 0;
+
+        while ( reader.readLine() != null ) {
+            linesCount++;
+        }
+
+        String[] lines = new String[linesCount];
+
+        // Новый BufferedReader, чтобы читать файл сначала
+        fis.getChannel().position(0);
+        reader = new BufferedReader ( new InputStreamReader(fis, "UTF-8") );
+
+        for (int i = 0; i < linesCount; i ++) {
+            lines[i] = reader.readLine();
+        }
+        return lines;
     }
 }

@@ -12,11 +12,11 @@ import siriustest.FileManager;
 import siriustest.manage.TestManager;
 
 import java.io.File;
-import java.util.Properties;
+
+import static siriustest.manage.TestManager.PROPERTIES;
 
 public class UserActionSteps {
 
-    private final Properties PROPERTIES = TestManager.getProperties();
     private Actions inputExecutor = TestManager.getInputExecutor();
     private WebDriverWait wait = TestManager.getWait();
 
@@ -42,12 +42,11 @@ public class UserActionSteps {
         Thread.sleep( timeout * 1000 );
     }
 
-    // TODO: 12.03.2017 Проверка лога
     @Then("^log should contain string \"([^\"]*)\"$")
-    public void logShouldContainString(String logString) throws Throwable {
-        File serverLogFile = new File ( PROPERTIES.getProperty( "log.server" ) );
-        String pattern = FileManager.getPattern(new File( PROPERTIES.getProperty( "log.client" )));
-
-        Assert.assertTrue(FileManager.searchInLogFile(serverLogFile, pattern, logString));
+    public void logShouldContainString(String searchString) throws Throwable {
+        boolean found = FileManager.searchInLogFile(new File( PROPERTIES.getProperty("log.client") ),
+                                    new File( PROPERTIES.getProperty("log.server.folder") ),
+                                    searchString);
+        Assert.assertTrue( found );
     }
 }

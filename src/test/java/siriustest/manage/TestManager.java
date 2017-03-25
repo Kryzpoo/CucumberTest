@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 public class TestManager {
 
-    private static final Properties PROPERTIES = PropertiesLoader.getProperties();
+    public static final Properties PROPERTIES = PropertiesLoader.getProperties();
     private static WebDriver driver;
     private static WebDriverWait wait;
     private static WebDriverWait shortWait;
@@ -63,9 +63,5 @@ public class TestManager {
 
     public static Actions getInputExecutor() {
         return inputExecutor;
-    }
-
-    public static Properties getProperties() {
-        return PROPERTIES;
     }
 }

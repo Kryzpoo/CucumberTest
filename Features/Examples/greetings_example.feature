@@ -1,5 +1,6 @@
 @exampletests
 @greetingexample
+
 Feature: greeting example
 
   Scenario: greeting test
