@@ -42,11 +42,17 @@ public class UserActionSteps {
         Thread.sleep( timeout * 1000 );
     }
 
-    @Then("^log should contain string \"([^\"]*)\"$")
-    public void logShouldContainString(String searchString) throws Throwable {
-        boolean found = FileManager.searchInLogFile(new File( PROPERTIES.getProperty("log.client") ),
+    @Then("^server log should contain string \"([^\"]*)\"$")
+    public void serverLogShouldContainString(String searchString) throws Throwable {
+        boolean found = FileManager.searchInServerLogFile(new File( PROPERTIES.getProperty("log.client") ),
                                     new File( PROPERTIES.getProperty("log.server.folder") ),
                                     searchString);
+        Assert.assertTrue( found );
+    }
+
+    @Then("^client log should contain string \"([^\"]*)\"$")
+    public void clientLogShouldContainString(String searchString) throws Throwable {
+        boolean found = FileManager.searchInClientLogFile(new File(PROPERTIES.getProperty("log.client")), searchString);
         Assert.assertTrue( found );
     }
 }
