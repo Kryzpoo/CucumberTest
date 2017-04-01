@@ -53,7 +53,8 @@
                   user presses button "<button_name>"
                   user scrolls up "<number>" times
                   user scrolls down "<number>" times
-                  log should contain string "<string>"
+                  server log should contain string "<string>"
+                  client log should contain string "<string>"
                   element with text "<element_text>" should not be displayed
                   greeting "<element_text>" should be displayed
                   check should contain string "<element_text>"
