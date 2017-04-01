@@ -1,13 +1,14 @@
 Структура и требования
     Подробнее в гугле: язык gherkin
     Файл должен иметь расширение .feature и находиться в папке Features
-    Файл начинается с названия фичи (Feature: ...)
-    Фича содержит сценарии, которые и являются тестами (Scenario: ...)
-    Сценарий содержит шаги, начинающиеся со слов Given (дано), When (действия), Then (результат), And (дополнительные шаги в рамках одного этапа - любого из предыдущих)
+    Первой строкой файла должна быть: #language: ru
+    Файл начинается с названия фичи (Функционал: ...)
+    Фича содержит сценарии, которые и являются тестами (Сценарий: ...)
+    Сценарий содержит шаги, начинающиеся со слов Дано (предусловие), Когда (действия), Тогда (результат), И (дополнительные шаги в рамках одного этапа - любого из предыдущих)
     Файл со сценариями должен иметь кодировку UTF-8
 
 Запуск тестов
-    mvn clean install -Dcucumber.options="--tags @all_steps_touch_example --tags ~@ignored"
+    mvn clean install -Dcucumber.options="--tags @all_steps_touch_rus_example --tags ~@ignored"
     Если необходимо, можно проверить:
         Теоретически, можно хранить папку с тестами на общей шаре, чтобы не перебрасывать их между машинами по мере создания тестов.
         Для этого нужно в src\test\java\siriustest\run\RunnerTest.java изменить значение features:
@@ -35,53 +36,53 @@
     Теги можно создавать самостоятельно, даже указанные выше теги не являются обязательными, но для порядка лучше всего придерживаться единой системы обозначений.
 
 Тесты с набором параметров:
-    Тест начинается не со слова "Scenario: ...", как обычно, а с "Scenario Outline: ..."
+    Тест начинается не со слова "Сценарий: ...", как обычно, а с "Структура сценария: ..."
     Параметры должны быть заключены в кавычки и угловые скобки.
 
 Шаги:
-    В настоящий момент можно использовать следующие шаги (в независимости от этапа Given/When/Then/And):
-        page 'Payments and Transfers' is opened
-                  page 'Main Screen' is opened
-                  user inserts "<text>"
-                  user clears insert field by pressing backspace "<nember>" times
-                  user waits for timeout "<number>"
-                  user presses 'calendar switcher next' button
-                  user presses 'calendar switcher previous' button
-                  user presses button "<button_name>" on check
-                  user presses button 'HELP'
-                  user presses button 'HOME'
-                  user presses button "<button_name>"
-                  user scrolls up "<number>" times
-                  user scrolls down "<number>" times
-                  server log should contain string "<string>"
-                  client log should contain string "<string>"
-                  element with text "<element_text>" should not be displayed
-                  greeting "<element_text>" should be displayed
-                  check should contain string "<element_text>"
-                  check should be displayed
-                  keyboard should be displayed
-                  scrollbar should be displayed
-                  template "<template_name>" should be displayed
-                  element with text "<element_text>" should be displayed
-                  element 'timeout screen' should be displayed
-                  element 'support' : "<element_text>" should be displayed
-                  element 'region field' : "<element_text>" should be displayed
-                  element 'notes' : "<element_text>" should be displayed
-                  element 'help_notes' : "<element_text>" should be displayed
-                  element "<text_left>" : "<text_right>" should be displayed on 'Total' page
-                  element "<element_type>" : "<element_text>" should be displayed on 'Error' page
-                  element "<element_type>" : "<element_text>" should be displayed on 'OK' page
-                  element "<element_type>" : "<element_text>" should be displayed
+    В настоящий момент можно использовать следующие шаги (в независимости от этапа Дано/Когда/Тогда/И):
+        страница 'Платежи и переводы' открыта
+        страница 'Главный экран' открыта
+        элемент "<element_type>" с текстом \"([^\"]*)\" должен быть отображен
+        элемент "<element_type>" с текстом \"([^\"]*)\" должен быть отображен на странице 'ОК'
+        элемент "<element_type>" с текстом \"([^\"]*)\" должен быть отображен на странице 'Ошибка'
+        элемент "<text_left>" с текстом "<text_right>" должен быть отображен на странице 'Итого'
+        элемент с текстом "<element_text>" должен быть отображен
+        элемент с текстом "<element_text>" не должен быть отображен
+        элемент 'notes' с текстом "<element_text>" должен быть отображен
+        элемент 'поле региона' с текстом "<element_text>" должен быть отображен
+        элемент 'support' с текстом ""<element_text>" должен быть отображен
+        элемент 'экран ожидания' должен быть отображен
+        элемент 'помощь' с текстом "<element_text>" должен быть отображен
+        элемент прокрутки страницы должен быть отображен
+        шаблон "<template_name>" должен быть отображен
+        приветствие "<element_text>" должно быть отображено
+        пользователь нажимает кнопку "<button_text>"
+        пользователь нажимает кнопку 'Домой'
+        пользователь нажимает кнопку 'Помощь'
+        пользователь нажимает кнопку "<button_text>" на чеке
+        пользователь нажимает кнопку 'прокрутка календаря назад
+        пользователь нажимает кнопку 'прокрутка календаря вперед'
+        пользователь прокручивает страницу вниз "<number>" раз
+        пользователь прокручивает страницу вверх "<number>" раз
+        пользователь вводит "<text>"
+        пользователь нажимает кнопку 'Backspace' "<number>" раз
+        пользователь ожидает "<number>" секунд
+        в серверном логе должна присутствовать строка "<text>"
+        в клиентском логе должна присутствовать строка "<text>"
+        клавиатура должна быть отображена
+        чек должен быть отображен
+        на чеке должна быть отображена строка "<text>"
 
         * Пробелы игнорируются
         * Кавычки " " обязательны в шаге, а угловые скобки < > - описывают переменную.
           В шагах, где присутствуют кавычки одиночные ' ' без угловых скобок < > не допускаются другие переменные, например:
-              user presses button "<button_name>" - означает, что можно ввести название кнопки самостоятельно: When user presses button "Платежи"
-              user presses button 'HOME' - означает, что этот шаг не использует переменные, это просто нажатие кнопки HOME
+              пользователь нажимает кнопку "<button_name>" - означает, что можно ввести название кнопки самостоятельно: пользователь нажимает кнопку "Платежи"
+              пользователь нажимает кнопку 'Домой' - означает, что этот шаг не использует переменные, это просто нажатие кнопки "Домой"
           Эти нюансы связаны с неудобными названиями элементов в коде страницы или с отсутствием явной надписи на кнопке, как в случае с "домиком",
           для таких элементов пришлось создать отдельные шаги.
 
-Шаги на русском:
+ Начало шагов на русском:
     	  "name": "Russian",
     	  "native": "русский",
     	  "feature": "Функция|Функционал|Свойство",
