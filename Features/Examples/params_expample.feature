@@ -1,13 +1,14 @@
+#language: ru
 @exampletests
 @paramsexample
-Feature: params example
+Функционал: пример теста с параметрами
 
-  Scenario Outline: test with parameters
-    Given page 'Payments and Transfers' is opened
-    When user presses button "<button>"
-    Then element "title" : "<page_title>" should be displayed
+  Структура сценария: тест с параметрами
+    Дано страница 'Платежи и переводы' открыта
+    Если пользователь нажимает кнопку "<button>"
+      То элемент "title" с текстом "<page_title>" должен быть отображен на странице 'ОК'
 
-    Examples:
+    Примеры:
       | button                                | page_title                            |
       | Мои шаблоны и автоплатежи             | Мои автоплатежи                       |
       | Транспорт                             | Транспорт                             |

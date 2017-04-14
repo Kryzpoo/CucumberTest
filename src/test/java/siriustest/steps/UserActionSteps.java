@@ -1,7 +1,6 @@
 package siriustest.steps;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import cucumber.api.java.ru.Дано;
 import cucumber.api.java.ru.Когда;
 import cucumber.api.java.ru.Тогда;
 import org.junit.Assert;
@@ -10,7 +9,7 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import siriustest.FileManager;
+import siriustest.LogManager;
 import siriustest.manage.TestManager;
 
 import java.io.File;
@@ -23,7 +22,6 @@ public class UserActionSteps {
     private WebDriverWait wait = TestManager.getWait();
 
     @Когда("^пользователь вводит \"([^\"]*)\"$")
-    @When("^user inserts \"([^\"]*)\"$")
     public void userInsertsIntoFieldTouch(String text) throws Throwable {
         wait.until(ExpectedConditions.visibilityOfElementLocated
                 (By.className( "input_cursor" )));
@@ -32,7 +30,6 @@ public class UserActionSteps {
     }
 
     @Когда("^пользователь нажимает кнопку 'Backspace' \"([^\"]*)\" раз$")
-    @When("^user clears insert field by pressing backspace \"([^\"]*)\" times$")
     public void userClearsInsertField(int pressCount) throws Throwable {
         wait.until(ExpectedConditions.visibilityOfElementLocated
                 (By.className( "input_cursor" )));
@@ -42,24 +39,32 @@ public class UserActionSteps {
     }
 
     @Когда("^пользователь ожидает \"([^\"]*)\" секунд$")
-    @When("^user waits for timeout \"([^\"]*)\"$")
     public void userWaitsForTimeout(int timeout) throws Throwable {
         Thread.sleep( timeout * 1000 );
     }
 
-    @Тогда("^в серверном логе должна присутствовать строка \"([^\"]*)\"$")
-    @Then("^server log should contain string \"([^\"]*)\"$")
+    @Тогда("^в логе сервера должна присутствовать строка \"([^\"]*)\"$")
     public void serverLogShouldContainString(String searchString) throws Throwable {
-        boolean found = FileManager.searchInServerLogFile(new File( PROPERTIES.getProperty("log.client") ),
+        boolean found = LogManager.serverLogContainsString(new File( PROPERTIES.getProperty("log.client") ),
                                     new File( PROPERTIES.getProperty("log.server.folder") ),
                                     searchString);
         Assert.assertTrue( found );
     }
 
-    @Тогда("^в клиентском логе должна присутствовать строка \"([^\"]*)\"$")
-    @Then("^client log should contain string \"([^\"]*)\"$")
+    @Тогда("^в логе клиента должна присутствовать строка \"([^\"]*)\"$")
     public void clientLogShouldContainString(String searchString) throws Throwable {
-        boolean found = FileManager.searchInClientLogFile(new File(PROPERTIES.getProperty("log.client")), searchString);
+        boolean found = LogManager.clientLogContainsString(new File(PROPERTIES.getProperty("log.client")), searchString);
         Assert.assertTrue( found );
+    }
+
+    @Тогда("^в логе эмулятора должна присутствовать строка \"([^\"]*)\"$")
+    public void emulatorLogShouldContainString(String searchString) throws Throwable {
+        boolean found = LogManager.logContainsString(new File(PROPERTIES.getProperty("log.emulator")), searchString);
+        Assert.assertTrue( found );
+    }
+
+    @Дано("^адресная строка содержит \"([^\"]*)\"$")
+    public void вАдреснойСтрокеПрисутствуетСтрока(String URLsubStruing) throws Throwable {
+        wait.until(ExpectedConditions.urlContains(URLsubStruing));
     }
 }

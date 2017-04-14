@@ -27,7 +27,8 @@ public class TestManager {
     public void setUp() {
         String driverName = PROPERTIES.getProperty( "driver.name" );
         String driverFilename = PROPERTIES.getProperty( "driver.filename" );
-        String driverTimeout = PROPERTIES.getProperty( "setting.timeout" );
+        String driverTimeout = PROPERTIES.getProperty( "setting.timeout.wait" );
+        String driverShortTimeout = PROPERTIES.getProperty( "setting.timeout.error" );
 
         System.setProperty(DriverIdentifier.identifyDriver( driverName ),
                 System.getProperty( "user.dir" )
@@ -38,7 +39,7 @@ public class TestManager {
         driver = DriverIdentifier.getDriver( driverName );
         driver.manage().timeouts().pageLoadTimeout( Integer.parseInt( driverTimeout ), TimeUnit.SECONDS );
         wait = new WebDriverWait(driver, Integer.parseInt( driverTimeout ));
-        shortWait = new WebDriverWait(driver, 5);
+        shortWait = new WebDriverWait(driver, Integer.parseInt( driverShortTimeout ));
         inputExecutor = new Actions(driver);
     }
 

@@ -4,9 +4,9 @@ import java.io.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FileManager {
+public class LogManager {
 
-    public static boolean searchInServerLogFile(File clientLogFile, File logsFolder, String searchingString ) {
+    public static boolean serverLogContainsString(File clientLogFile, File logsFolder, String searchingString ) {
         boolean found = false;
         String token;
         String WASSessionId;
@@ -26,21 +26,35 @@ public class FileManager {
             }
 
         } catch (IOException ex) {
-            System.err.println( "Ошибки при разборе логов" );
+            System.err.println( "Log parsing error" );
         }
         return found;
     }
 
-    public static boolean searchInClientLogFile(File clientLogFile, String searchingString ) {
+    public static boolean clientLogContainsString(File clientLogFile, String searchingString ) {
         boolean found = false;
         String[] clientLog;
 
         try ( FileInputStream clientLogFis = new FileInputStream(clientLogFile) ) {
             clientLog = getTextFileAsArray( clientLogFis );
-            found = containsString(clientLog, searchingString);
+            found = sessionContainsString(clientLog, searchingString);
 
         } catch (IOException ex) {
-            System.err.println( "Ошибки при разборе логов" );
+            System.err.println( "Log parsing error" );
+        }
+        return found;
+    }
+
+    public static boolean logContainsString(File logFile, String searchingString ) {
+        boolean found = false;
+        String[] log;
+
+        try ( FileInputStream logFis = new FileInputStream(logFile) ) {
+            log = getTextFileAsArray( logFis );
+            found = containsString(log, searchingString);
+
+        } catch (IOException ex) {
+            System.err.println( "Log parsing error" );
         }
         return found;
     }
@@ -67,13 +81,27 @@ public class FileManager {
         return contains;
     }
 
+    private static boolean sessionContainsString(String[] log, String searchingString) {
+        boolean contains = false;
+        for(int i = log.length - 1; i > 0; i--) {
+            if ( log[i].contains(searchingString) ) {
+                contains = true;
+                break;
+            }
+            if (log[i].contains("Переход по \"/\"") )
+                break;
+        }
+        return contains;
+    }
+
     private static File[] getFilesFromFolder(File folder) {
         return folder.listFiles((dir, name) -> name.contains("SystemOut"));
     }
 
     private static String getWASSessionId(String[] log, String token) throws IOException {
         String WASSessionId = null;
-        Pattern pattern = Pattern.compile("] (.*?) ");
+        Pattern pattern = Pattern.compile("SystemOut     O (.*?) :");
+
         Matcher matcher;
 
         for(int i = log.length - 1; i > 0; i--) {

@@ -8,5 +8,6 @@ import org.junit.runner.RunWith;
 @CucumberOptions(
         glue = { "siriustest.manage", "siriustest.steps" },
         features = "Features",
-        format = { "pretty", "html:target/reports-pretty", "json:target/cucumber.json" })
+        format = { "pretty", "html:target/reports-pretty", "json:target/cucumber.json" },
+        monochrome=true)
 public class RunnerTest {}

@@ -1,6 +1,5 @@
 package siriustest.steps;
 
-import cucumber.api.java.en.When;
 import cucumber.api.java.ru.Когда;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -15,7 +14,6 @@ public class PressButtonSteps {
     private WebDriverWait wait = TestManager.getWait();
 
     @Когда("^пользователь нажимает кнопку \"([^\"]*)\"$")
-    @When("^user presses button \"([^\"]*)\"$")
     public void userPressesButton(String buttonText) throws Throwable {
         buttonText = buttonText.replaceAll(" ", "");
         WebElement button = wait.until(ExpectedConditions.presenceOfElementLocated
@@ -24,7 +22,6 @@ public class PressButtonSteps {
     }
 
     @Когда("^пользователь нажимает кнопку 'Домой'$")
-    @When("^user presses button 'HOME'$")
     public void userPressesButtonHOME() throws Throwable {
         WebElement homeButton = wait.until(ExpectedConditions.presenceOfElementLocated
                 (By.xpath( "//*[contains(@class, 'b-btn b-btn-menu-dual') or contains(@class, 'tabs_item ndc') or contains(@class, 'tabs_item main_menu ')]" )));
@@ -32,7 +29,6 @@ public class PressButtonSteps {
     }
 
     @Когда("^пользователь нажимает кнопку 'Помощь'$")
-    @When("^user presses button 'HELP'$")
     public void userPressesButtonHELP() throws Throwable {
         WebElement helpButton = wait.until(ExpectedConditions.presenceOfElementLocated
                 (By.xpath("//*[@class = 'help_button']")));
@@ -40,7 +36,6 @@ public class PressButtonSteps {
     }
 
     @Когда("^пользователь нажимает кнопку \"([^\"]*)\" на чеке$")
-    @When("^user presses button \"([^\"]*)\" on check$")
     public void userPressesButtonOnCheck(String buttonText) throws Throwable {
         buttonText = buttonText.replaceAll(" ", "");
         WebElement button = wait.until(ExpectedConditions.presenceOfElementLocated
@@ -49,7 +44,6 @@ public class PressButtonSteps {
     }
 
     @Когда("^пользователь нажимает кнопку 'прокрутка календаря назад'$")
-    @When("^user presses 'calendar switcher previous' button$")
     public void userPressesButtonCalendarSwitcherPrev() throws Throwable {
         WebElement calendarSwitcherButton = wait.until(ExpectedConditions.presenceOfElementLocated
                 (By.className("switcher_prev")));
@@ -57,7 +51,6 @@ public class PressButtonSteps {
     }
 
     @Когда("^пользователь нажимает кнопку 'прокрутка календаря вперед'$")
-    @When("^user presses 'calendar switcher next' button$")
     public void userPressesButtonCalendarSwitcherNext() throws Throwable {
         WebElement calendarSwitcherButton = wait.until(ExpectedConditions.presenceOfElementLocated
                 (By.className("switcher_next")));
@@ -65,7 +58,6 @@ public class PressButtonSteps {
     }
 
     @Когда("^пользователь прокручивает страницу вниз \"([^\"]*)\" раз$")
-    @When("^user scrolls down \"([^\"]*)\" times$")
     public void userScrollsDown(int count) throws Throwable {
         WebElement scrollButton = wait.until(ExpectedConditions.presenceOfElementLocated
                 (By.xpath("//*[contains(@class, 'scroll-bar_next') and not(contains(@style, 'display::none'))][not(ancestor::div[contains(@style,'display:none')])]")));
@@ -74,7 +66,6 @@ public class PressButtonSteps {
     }
 
     @Когда("^пользователь прокручивает страницу вверх \"([^\"]*)\" раз$")
-    @When("^user scrolls up \"([^\"]*)\" times$")
     public void userScrollsUp(int count) throws Throwable {
         WebElement scrollButton = wait.until(ExpectedConditions.presenceOfElementLocated
                 (By.xpath("//*[contains(@class, 'scroll-bar_prev') and not(contains(@style, 'display::none'))][not(ancestor::div[contains(@style,'display:none')])]")));
