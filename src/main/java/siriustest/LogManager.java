@@ -6,148 +6,121 @@ import java.util.regex.Pattern;
 
 public class LogManager {
 
-    public static boolean serverLogContainsString(File clientLogFile, File logsFolder, String searchingString ) {
-        boolean found = false;
-        String token;
-        String WASSessionId;
-        String[] serverLog;
-        String[] clientLog;
-
-        try ( FileInputStream clientLogFis = new FileInputStream(clientLogFile) ) {
-            clientLog = getTextFileAsArray( clientLogFis );
-            token = getSessionToken( clientLog );
-
-            for (File serverLogFile : getFilesFromFolder(logsFolder)) {
-                FileInputStream serverLogFis = new FileInputStream(serverLogFile);
-                serverLog = getTextFileAsArray( serverLogFis );
-                WASSessionId = getWASSessionId( serverLog, token );
-                found = containsStringWithToken( serverLog, WASSessionId, searchingString );
-                serverLogFis.close();
-            }
-
-        } catch (IOException ex) {
-            System.err.println( "Log parsing error" );
-        }
-        return found;
-    }
-
-    public static boolean clientLogContainsString(File clientLogFile, String searchingString ) {
-        boolean found = false;
-        String[] clientLog;
-
-        try ( FileInputStream clientLogFis = new FileInputStream(clientLogFile) ) {
-            clientLog = getTextFileAsArray( clientLogFis );
-            found = sessionContainsString(clientLog, searchingString);
-
-        } catch (IOException ex) {
-            System.err.println( "Log parsing error" );
-        }
-        return found;
-    }
-
-    public static boolean logContainsString(File logFile, String searchingString ) {
-        boolean found = false;
-        String[] log;
-
-        try ( FileInputStream logFis = new FileInputStream(logFile) ) {
-            log = getTextFileAsArray( logFis );
-            found = containsString(log, searchingString);
-
-        } catch (IOException ex) {
-            System.err.println( "Log parsing error" );
-        }
-        return found;
-    }
-
-    private static boolean containsStringWithToken(String[] log, String WASSessionId, String searchingString) {
-        boolean contains = false;
-        for(int i = log.length - 1; i > 0; i--) {
-            if ( log[i].contains(WASSessionId) && log[i].contains(searchingString) ) {
-                contains = true;
-                break;
-            }
-        }
-        return contains;
-    }
-
-    private static boolean containsString(String[] log, String searchingString) {
-        boolean contains = false;
-        for(int i = log.length - 1; i > 0; i--) {
-            if ( log[i].contains(searchingString) ) {
-                contains = true;
-                break;
-            }
-        }
-        return contains;
-    }
-
-    private static boolean sessionContainsString(String[] log, String searchingString) {
-        boolean contains = false;
-        for(int i = log.length - 1; i > 0; i--) {
-            if ( log[i].contains(searchingString) ) {
-                contains = true;
-                break;
-            }
-            if (log[i].contains("Переход по \"/\"") )
-                break;
-        }
-        return contains;
-    }
-
     private static File[] getFilesFromFolder(File folder) {
         return folder.listFiles((dir, name) -> name.contains("SystemOut"));
     }
 
-    private static String getWASSessionId(String[] log, String token) throws IOException {
-        String WASSessionId = null;
-        Pattern pattern = Pattern.compile("SystemOut     O (.*?) :");
-
-        Matcher matcher;
-
-        for(int i = log.length - 1; i > 0; i--) {
-            if (log[i].contains(token)) {
-                matcher = pattern.matcher(log[i]);
-                if (matcher.find()) {
-                    WASSessionId = matcher.group(1);
-                    break;
-                }
-            }
-        }
-        return WASSessionId;
-    }
-
-    private static String getSessionToken(String[] log) {
-        String token = null;
+    private static String getSessionToken(FileInputStream fis) throws IOException {
+        BufferedReader reader = new BufferedReader ( new InputStreamReader(fis, "UTF-8") );
+        String token = "___NO_CLIENT_SESSION_TOKEN___";
         Pattern pattern = Pattern.compile("token=(.*?)&");
         Matcher matcher;
+        String line;
 
-        for(int i = log.length - 1; i > 0; i--) {
-            matcher = pattern.matcher(log[i]);
+        while ( (line = reader.readLine()) != null ) {
+            matcher = pattern.matcher(line);
             if (matcher.find()) {
                 token = matcher.group(1);
-                break;
             }
         }
         return token;
     }
 
-    private static String[] getTextFileAsArray(FileInputStream fis) throws IOException {
-        BufferedReader reader = new BufferedReader ( new InputStreamReader(fis, "UTF-8") );
-        int linesCount = 0;
+    private static String getWASSessionId(BufferedReader reader, String token) throws IOException {
+        String WASSessionId = "___NO_WAS_SESSION_ID___";
+        Pattern pattern = Pattern.compile("SystemOut {5}O (.*?) :");
+        Matcher matcher;
+        String line;
 
-        while ( reader.readLine() != null ) {
-            linesCount++;
+        while ( (line = reader.readLine()) != null ) {
+            if (line.contains(token)) {
+                matcher = pattern.matcher(line);
+                if (matcher.find()) {
+                    WASSessionId = matcher.group(1);
+                    // Вернуться к метке
+                    reader.reset();
+                    break;
+                }
+            } else
+                // Пометить строку, чтобы вернуться на 1 строку назад и начать читать всю сессию сначала
+                reader.mark(1);
         }
+        return WASSessionId;
+    }
 
-        String[] lines = new String[linesCount];
+    /*
+        Метод проверки лога клиента
+        Берем токен последней сессии в логе клиента
+        Ищем нужную строку сразу после того, как токен встретился
+     */
+    public static boolean parseClientLog(File clientLog, String stringToFind) throws IOException {
+        String line;
+        boolean search = false;
 
-        // Новый BufferedReader, чтобы читать файл сначала
-        fis.getChannel().position(0);
-        reader = new BufferedReader ( new InputStreamReader(fis, "UTF-8") );
-
-        for (int i = 0; i < linesCount; i ++) {
-            lines[i] = reader.readLine();
+        try ( FileInputStream fis = new FileInputStream(clientLog) ) {
+            String token = getSessionToken(fis);
+            // Возврат к началу файла
+            fis.getChannel().position(0);
+            BufferedReader reader = new BufferedReader ( new InputStreamReader(fis, "UTF-8") );
+            while ( (line = reader.readLine()) != null ) {
+                if (search) {
+                    if (line.contains(stringToFind))
+                        return true;
+                } else if (line.contains(token))
+                    search = true;
+            }
         }
-        return lines;
+        catch (IOException ex) {
+            System.err.println( "Client log parsing error" );
+        }
+        return false;
+    }
+
+    /*
+        Метод проверки лога сервера
+        Берем токен последней сессии в логе клиента
+        Берем лог сервера из папки
+        Берем WASSessionID сервера
+        Ищем нужную строку, которая включает WASSessionID интересующей нас сессии
+        Если строка не найдена, берем следующий лог сервера
+     */
+    public static boolean parseServerLog(File clientLog, File logsFolder, String stringToFind) throws IOException {
+        try ( FileInputStream clientFis = new FileInputStream(clientLog) ) {
+            String token = getSessionToken(clientFis);
+            for ( File serverLogFile : getFilesFromFolder(logsFolder) ) {
+                try ( FileInputStream serverFis = new FileInputStream(serverLogFile) ) {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(serverFis, "UTF-8"));
+                    String WASSessionId = getWASSessionId(reader, token);
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        if (line.contains(WASSessionId) && line.contains(stringToFind)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        } catch (IOException ex) {
+            System.err.println( "Server log parsing error" );
+        }
+        return false;
+    }
+
+    /*
+        Метод проверки лога эмулятора
+        Ищем нужную строку в логе эмулятора
+     */
+    public static boolean parseEmulatorLog(File emulatorLog, String stringToFind) throws IOException {
+        try ( FileInputStream fis = new FileInputStream(emulatorLog) ) {
+            BufferedReader reader = new BufferedReader ( new InputStreamReader(fis, "UTF-8") );
+            String line;
+            while ( (line = reader.readLine()) != null ) {
+                if ( line.contains(stringToFind) ) {
+                    return true;
+                }
+            }
+        } catch (IOException ex) {
+            System.err.println( "Emulator log parsing error" );
+        }
+        return false;
     }
 }

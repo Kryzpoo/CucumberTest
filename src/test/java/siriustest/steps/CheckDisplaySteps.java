@@ -12,84 +12,84 @@ public class CheckDisplaySteps {
     private WebDriverWait wait = TestManager.getWait();
     private WebDriverWait shortWait = TestManager.getShortWait();
 
-    @Тогда("^элемент \"([^\"]*)\" с текстом \"([^\"]*)\" должен быть отображен$")
+    @Тогда("^элемент \"([^\"]*)\" с текстом \"([^\"]*)\" отображен$")
     public void elementShouldBeDisplayed(String elementType, String elementText) throws Throwable {
         elementText = elementText.replaceAll(" ", "");
         wait.until(ExpectedConditions.visibilityOfElementLocated
                 (By.xpath( "//*[contains(@class, '" + elementType + "_text') and " + translatedSymbols + " = '" + elementText + "' ]" )));
     }
 
-    @Тогда("^элемент 'notes' с текстом \"([^\"]*)\" должен быть отображен$")
+    @Тогда("^элемент 'notes' с текстом \"([^\"]*)\" отображен$")
     public void elementNotesShouldBeDisplayed(String notesText) throws Throwable {
         notesText = notesText.replaceAll(" ", "");
         wait.until(ExpectedConditions.visibilityOfElementLocated
                 (By.xpath( "//*[@class = 'description_text']/..//*[contains(" + translatedSymbols + ", '" + notesText + "')]" )));
     }
 
-    @Тогда("^элемент 'поле региона' с текстом \"([^\"]*)\" должен быть отображен$")
+    @Тогда("^элемент 'поле региона' с текстом \"([^\"]*)\" отображен$")
     public void elementRegionFieldShouldBeDisplayed(String regionText) throws Throwable {
         regionText = regionText.replaceAll(" ", "");
         wait.until(ExpectedConditions.visibilityOfElementLocated
                 (By.xpath( "//*[@class = 'btn_caption']/..//*[" + translatedSymbols + " = '" + regionText + "']" )));
     }
 
-    @Тогда("^элемент 'support' с текстом \"([^\"]*)\" должен быть отображен$")
+    @Тогда("^элемент 'support' с текстом \"([^\"]*)\" отображен$")
     public void elementSupportShouldBeDisplayed(String supportText) throws Throwable {
         supportText = supportText.replaceAll(" ", "");
         wait.until(ExpectedConditions.visibilityOfElementLocated
                 (By.xpath( "//*[@class = 'timeout_support']/..//*[" + translatedSymbols + " = '" + supportText + "']" )));
     }
 
-    @Тогда("^элемент 'экран ожидания' должен быть отображен$")
+    @Тогда("^элемент 'экран ожидания' отображен$")
     public void elementTimeoutScreenShouldBeDisplayed() throws Throwable {
         wait.until(ExpectedConditions.visibilityOfElementLocated
                 (By.xpath( "//*[@class = 'timeout_message']" )));
     }
 
-    @Тогда("^шаблон \"([^\"]*)\" должен быть отображен$")
+    @Тогда("^шаблон \"([^\"]*)\" отображен$")
     public void templateShouldBeAn(String templateName) throws Throwable {
         wait.until(ExpectedConditions.presenceOfElementLocated
                 (By.xpath( "//meta[@content = '" + templateName + ".html']" )));
     }
 
-    @Тогда("^элемент с текстом \"([^\"]*)\" должен быть отображен$")
+    @Тогда("^элемент с текстом \"([^\"]*)\" отображен$")
     public void elementShouldBeDisplayed(String elementText) throws Throwable {
         elementText = elementText.replaceAll(" ", "");
         wait.until(ExpectedConditions.presenceOfElementLocated
                 (By.xpath("//*[" + translatedSymbols + " = '" + elementText + "']")));
     }
 
-    @Тогда("^клавиатура должна быть отображена$")
+    @Тогда("^клавиатура отображена$")
     public void userShouldSeeKeyboard() throws Throwable {
         wait.until(ExpectedConditions.visibilityOfElementLocated
             (By.xpath("//*[@class = 'b-numpad' or @class = 'kb_all']")));
     }
 
-    @Тогда("^чек должен быть отображен$")
+    @Тогда("^чек отображен$")
     public void checkShouldBeDisplayed() throws Throwable {
         wait.until(ExpectedConditions.visibilityOfElementLocated
                 (By.className( "b-receipt" )));
     }
 
-    @Тогда("^на чеке должна быть отображена строка \"([^\"]*)\"$")
+    @Тогда("^на чеке отображена строка \"([^\"]*)\"$")
     public void checkShouldContainString(String checkText) throws Throwable {
         wait.until(ExpectedConditions.visibilityOfElementLocated
                 (By.xpath( "//*[contains(text(), '" + checkText + "')]" )));
     }
 
-    @Тогда("^элемент \"([^\"]*)\" с текстом \"([^\"]*)\" должен быть отображен на странице 'ОК'$")
+    @Тогда("^элемент \"([^\"]*)\" с текстом \"([^\"]*)\" отображен на странице 'ОК'$")
     public void elementShouldBeDisplayedOnOKPage(String elementType, String elementText) throws Throwable {
         elementText = elementText.replaceAll(" ", "");
         wait.until(ExpectedConditions.presenceOfElementLocated
                 (By.xpath( "//*[@class = 'report_" + elementType + "']/..//*[" + translatedSymbols + " = '" + elementText + "']" )));
     }
 
-    @Тогда("^элемент \"([^\"]*)\" с текстом \"([^\"]*)\" должен быть отображен на странице 'Ошибка'$")
+    @Тогда("^элемент \"([^\"]*)\" с текстом \"([^\"]*)\" отображен на странице 'Ошибка'$")
     public void elementShouldBeDisplayedOnErrorPage(String elementType, String elementText) throws Throwable {
         elementShouldBeDisplayedOnOKPage(elementType, elementText);
     }
 
-    @Тогда("^элемент \"([^\"]*)\" с текстом \"([^\"]*)\" должен быть отображен на странице 'Итого'$")
+    @Тогда("^элемент \"([^\"]*)\" с текстом \"([^\"]*)\" отображен на странице 'Итого'$")
     public void elementShouldBeDisplayedOnTotalPage(String elementCaption, String elementText) throws Throwable {
         elementCaption = elementCaption.replaceAll(" ", "");
         elementText = elementText.replaceAll(" ", "");
@@ -97,27 +97,27 @@ public class CheckDisplaySteps {
                 (By.xpath( "//*[" + translatedSymbols + " = '" + elementCaption + "']/../..//*[" + translatedSymbols + " = '" + elementText + "']" )));
     }
 
-    @Тогда("^приветствие \"([^\"]*)\" должно быть отображено$")
+    @Тогда("^приветствие \"([^\"]*)\" отображено$")
     public void greetingShouldBeDisplayed(String elementText) throws Throwable {
         elementText = elementText.replaceAll(" ", "");
         wait.until(ExpectedConditions.visibilityOfElementLocated
                 (By.xpath( "//*[@class = 'btn_caption' and " + translatedSymbols + " = '" + elementText + "']" )));
     }
 
-    @Тогда("^элемент с текстом \"([^\"]*)\" не должен быть отображен$")
+    @Тогда("^элемент с текстом \"([^\"]*)\" не отображен$")
     public void elementWithTextShouldNotBeDisplayed(String elementText) throws Throwable {
         elementText = elementText.replaceAll(" ", "");
         shortWait.until(ExpectedConditions.not(ExpectedConditions.visibilityOfAllElementsLocatedBy
                 (By.xpath("//*[" + translatedSymbols + " = '" + elementText + "']"))));
     }
 
-    @Тогда("^элемент прокрутки страницы должен быть отображен$")
+    @Тогда("^элемент прокрутки страницы отображен$")
     public void scrollbarShouldBeDisplayed() throws Throwable {
         wait.until(ExpectedConditions.visibilityOfElementLocated
                 (By.xpath( "//*[contains(@class, 'b-scroll-bar') and not(contains(@style, 'display::none'))][not(ancestor::div[contains(@style,'display:none')])]" )));
     }
 
-    @Тогда("^элемент 'помощь' с текстом \"([^\"]*)\" должен быть отображен$")
+    @Тогда("^элемент 'помощь' с текстом \"([^\"]*)\" отображен$")
     public void elementHelp_notesShouldBeDisplayed(String elementText) throws Throwable {
         elementText = elementText.replaceAll(" ", "");
         wait.until(ExpectedConditions.visibilityOfElementLocated

@@ -29,6 +29,7 @@ public class TestManager {
         String driverFilename = PROPERTIES.getProperty( "driver.filename" );
         String driverTimeout = PROPERTIES.getProperty( "setting.timeout.wait" );
         String driverShortTimeout = PROPERTIES.getProperty( "setting.timeout.error" );
+        boolean forceCloseDriver = Boolean.parseBoolean(PROPERTIES.getProperty( "setting.closedriver" ));
 
         System.setProperty(DriverIdentifier.identifyDriver( driverName ),
                 System.getProperty( "user.dir" )
@@ -41,6 +42,8 @@ public class TestManager {
         wait = new WebDriverWait(driver, Integer.parseInt( driverTimeout ));
         shortWait = new WebDriverWait(driver, Integer.parseInt( driverShortTimeout ));
         inputExecutor = new Actions(driver);
+        if (forceCloseDriver)
+            new DriverCloser();
     }
 
     @After

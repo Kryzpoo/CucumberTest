@@ -2,7 +2,9 @@ package siriustest.steps;
 
 import cucumber.api.java.ru.Когда;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import siriustest.manage.TestManager;
@@ -11,6 +13,7 @@ public class PressButtonSteps {
 
     private static final String translatedSymbols = "translate(normalize-space(), ' \u00A0\u200B\u00AD', '')";
     private static final String translatedSymbolsText = "translate(text(), ' \u00A0\u200B\u00AD', '')";
+    private Actions actionsExecutor = TestManager.getInputExecutor();
     private WebDriverWait wait = TestManager.getWait();
 
     @Когда("^пользователь нажимает кнопку \"([^\"]*)\"$")
@@ -18,7 +21,11 @@ public class PressButtonSteps {
         buttonText = buttonText.replaceAll(" ", "");
         WebElement button = wait.until(ExpectedConditions.presenceOfElementLocated
                 (By.xpath("//*[" + translatedSymbols + " = '" + buttonText + "' or " + translatedSymbolsText + " = '" + buttonText + "']/text()/..")));
-        button.click();
+        try {
+            button.click();
+        } catch (WebDriverException wex) {
+            actionsExecutor.moveToElement(button).click().perform();
+        }
     }
 
     @Когда("^пользователь нажимает кнопку 'Домой'$")

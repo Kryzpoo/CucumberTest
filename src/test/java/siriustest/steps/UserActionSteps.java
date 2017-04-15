@@ -43,23 +43,26 @@ public class UserActionSteps {
         Thread.sleep( timeout * 1000 );
     }
 
-    @Тогда("^в логе сервера должна присутствовать строка \"([^\"]*)\"$")
+    @Тогда("^в логе сервера присутствует строка \"([^\"]*)\"$")
     public void serverLogShouldContainString(String searchString) throws Throwable {
-        boolean found = LogManager.serverLogContainsString(new File( PROPERTIES.getProperty("log.client") ),
-                                    new File( PROPERTIES.getProperty("log.server.folder") ),
-                                    searchString);
+        boolean found = LogManager.parseServerLog(
+                new File( PROPERTIES.getProperty("log.client") ),
+                new File( PROPERTIES.getProperty("log.server.folder") ),
+                searchString);
         Assert.assertTrue( found );
     }
 
-    @Тогда("^в логе клиента должна присутствовать строка \"([^\"]*)\"$")
+    @Тогда("^в логе клиента присутствует строка \"([^\"]*)\"$")
     public void clientLogShouldContainString(String searchString) throws Throwable {
-        boolean found = LogManager.clientLogContainsString(new File(PROPERTIES.getProperty("log.client")), searchString);
+        boolean found = LogManager.parseClientLog(
+                new File(PROPERTIES.getProperty("log.client")), searchString);
         Assert.assertTrue( found );
     }
 
-    @Тогда("^в логе эмулятора должна присутствовать строка \"([^\"]*)\"$")
+    @Тогда("^в логе эмулятора присутствует строка \"([^\"]*)\"$")
     public void emulatorLogShouldContainString(String searchString) throws Throwable {
-        boolean found = LogManager.logContainsString(new File(PROPERTIES.getProperty("log.emulator")), searchString);
+        boolean found = LogManager.parseEmulatorLog(
+                new File(PROPERTIES.getProperty("log.emulator")), searchString);
         Assert.assertTrue( found );
     }
 
