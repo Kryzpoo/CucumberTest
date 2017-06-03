@@ -47,15 +47,24 @@ public class UserActionSteps {
     public void serverLogShouldContainString(String searchString) throws Throwable {
         boolean found = LogManager.parseServerLog(
                 new File( PROPERTIES.getProperty("log.client") ),
-                new File( PROPERTIES.getProperty("log.server.folder") ),
+                new File( PROPERTIES.getProperty("log.server") ),
                 searchString);
+
         Assert.assertTrue( found );
     }
 
     @Тогда("^в логе клиента присутствует строка \"([^\"]*)\"$")
     public void clientLogShouldContainString(String searchString) throws Throwable {
-        boolean found = LogManager.parseClientLog(
-                new File(PROPERTIES.getProperty("log.client")), searchString);
+        boolean found = false;
+        int repeat = 0;
+        while ( (!found) && (repeat < 3) ) {
+            found = LogManager.parseClientLog(
+                    new File(PROPERTIES.getProperty("log.client")), searchString);
+            // Если запись в логе не найдена, проверяем трижды с интервалом 2 секунды,
+            // так как в клиентский лог информация может приходить с задержкой
+            repeat ++;
+            Thread.sleep(2000);
+        }
         Assert.assertTrue( found );
     }
 
@@ -67,7 +76,7 @@ public class UserActionSteps {
     }
 
     @Дано("^адресная строка содержит \"([^\"]*)\"$")
-    public void вАдреснойСтрокеПрисутствуетСтрока(String URLsubStruing) throws Throwable {
+    public void urlContainsString(String URLsubStruing) throws Throwable {
         wait.until(ExpectedConditions.urlContains(URLsubStruing));
     }
 }
