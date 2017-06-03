@@ -13,7 +13,7 @@ public class LogManager {
     private static String getSessionToken(FileInputStream fis) throws IOException {
         BufferedReader reader = new BufferedReader ( new InputStreamReader(fis, "UTF-8") );
         String token = "___NO_CLIENT_SESSION_TOKEN___";
-        Pattern pattern = Pattern.compile("token=(.*?)&");
+        Pattern pattern = Pattern.compile("&token=(.*?)&");
         Matcher matcher;
         String line;
 
@@ -23,6 +23,8 @@ public class LogManager {
                 token = matcher.group(1);
             }
         }
+        // Берем не весь токен, а его часть (последние 20 символов) - из-за возможного маскирования остальной части токена
+        token = token.substring(25);
         return token;
     }
 
@@ -33,17 +35,13 @@ public class LogManager {
         String line;
 
         while ( (line = reader.readLine()) != null ) {
-            if (line.contains(token)) {
+            if (line.contains("Gate") && line.contains(token)) {
                 matcher = pattern.matcher(line);
                 if (matcher.find()) {
                     WASSessionId = matcher.group(1);
-                    // Вернуться к метке
-                    reader.reset();
                     break;
                 }
-            } else
-                // Пометить строку, чтобы вернуться на 1 строку назад и начать читать всю сессию сначала
-                reader.mark(1);
+            }
         }
         return WASSessionId;
     }
@@ -84,24 +82,30 @@ public class LogManager {
         Ищем нужную строку, которая включает WASSessionID интересующей нас сессии
         Если строка не найдена, берем следующий лог сервера
      */
-    public static boolean parseServerLog(File clientLog, File logsFolder, String stringToFind) throws IOException {
-        try ( FileInputStream clientFis = new FileInputStream(clientLog) ) {
-            String token = getSessionToken(clientFis);
-            for ( File serverLogFile : getFilesFromFolder(logsFolder) ) {
-                try ( FileInputStream serverFis = new FileInputStream(serverLogFile) ) {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(serverFis, "UTF-8"));
-                    String WASSessionId = getWASSessionId(reader, token);
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        if (line.contains(WASSessionId) && line.contains(stringToFind)) {
-                            return true;
-                        }
-                    }
+    public static boolean parseServerLog(File clientLog, File serverLog, String stringToFind) throws IOException {
+        String WASSessionId;
+        String token;
+        try (FileInputStream clientFis = new FileInputStream(clientLog)) {
+            // Находим токен клиентской сессии в клиентском логе
+            token = getSessionToken(clientFis);
+        }
+
+        // Читаем только SystemOut.log
+        try (FileInputStream serverFis = new FileInputStream(serverLog)) {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(serverFis, "UTF-8"));
+            // Находим токен сессии WAS
+            WASSessionId = getWASSessionId(reader, token);
+            String line;
+            // Пытаемся найти нужный лог
+            // Если находим, успешно завершаем
+            while ((line = reader.readLine()) != null) {
+                if (line.contains(WASSessionId) && line.contains(stringToFind)) {
+                    reader.close();
+                    return true;
                 }
             }
-        } catch (IOException ex) {
-            System.err.println( "Server log parsing error" );
         }
+
         return false;
     }
 
